@@ -1,0 +1,7 @@
+{
+    "username": "@test-user-xx:matrix.vitapavlik.cz",
+    "homeserver": "https://matrix.vitapavlik.cz",
+    "store_path": "store",
+    "device_id": "my-device-xx",
+    "device_display_name": "My Device XX"
+}
