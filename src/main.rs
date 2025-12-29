@@ -13,7 +13,9 @@ use matrix_sdk::{
         ForwardThread,
         AddMentions
     },
+    ruma::events::room::member::StrippedRoomMemberEvent,
     Client,
+    RoomState
 };
 use serde::Deserialize;
 use std::fs::{self, File};
@@ -118,6 +120,7 @@ async fn main() -> Result<()> {
 
     // 4. Register Handler & Sync
     client.add_event_handler(on_room_message);
+    client.add_event_handler(handle_invitation);
 
     println!("Bot is running...");
 
@@ -152,6 +155,36 @@ async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room) {
                 );
 
             room.send(content).await.ok();
+        }
+    }
+}
+
+pub async fn handle_invitation(
+    ev: StrippedRoomMemberEvent,
+    room: Room,
+    client: Client,
+) {
+    // 1. Check if the room state is 'Invited'
+    // In 0.16, we check the state() method
+    if room.state() != RoomState::Invited {
+        return;
+    }
+
+    // 2. Ensure the invite is for the bot
+    let Some(user_id) = client.user_id() else { return };
+    if ev.state_key != user_id.to_string() {
+        return;
+    }
+
+    // 3. Since we confirmed it's an invited room, we can use the
+    // join method directly on the room object or cast it.
+    println!("Accepting invite to room: {}", room.room_id());
+
+    // In recent versions, Room provides a direct join method if it's invited
+    match room.join().await {
+        Ok(_) => println!("Successfully joined!"),
+        Err(err) => {
+            eprintln!("Failed to join room {}: {err}", room.room_id());
         }
     }
 }
