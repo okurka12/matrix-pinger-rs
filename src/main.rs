@@ -29,7 +29,8 @@ static START_TIME: LazyLock<Instant> = LazyLock::new(Instant::now);
 
 const HELP_STRING: &str = r#"
 ping - invoke pong
-?echo CONTENT - echoes CONTENT
+?echo <CONTENT> - echoes CONTENT
+?cat - sends a picture of a cat
 ?uptime - reports current uptime
 ?help - shows this help message
 https://github.com/okurka12/matrix-pinger-rs"#;
@@ -150,6 +151,7 @@ async fn send_cat(event: &OriginalSyncRoomMessageEvent, room: &Room) -> Result<(
     // fetch image bytes
     let bytes = reqwest::get(url).await?.bytes().await?;
 
+    println!("Sending cat from {url}");
     room.send_attachment(
         "cat.jpg",
         &mime::IMAGE_JPEG,
