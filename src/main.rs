@@ -56,11 +56,11 @@ fn get_uptime() -> String {
 }
 
 fn get_reply_text(msg: &str) -> Option<String> {
-    if let Some(text) = msg.strip_prefix("?echo ") {
+    if let Some(text) = msg.strip_prefix("?echo ") && !text.is_empty() {
         Some(text.to_string())
     } else {
         match msg {
-            "ping" => Some("pong".to_string()),
+            m if m.eq_ignore_ascii_case("ping") => Some("pong".to_string()),
             "?uptime" => Some(get_uptime()),
             "?help" => Some(HELP_STRING.to_string()),
             _ => None,
