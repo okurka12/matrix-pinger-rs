@@ -91,13 +91,14 @@ fn get_uptime() -> String {
     let service_uptime = format!("{}d {}h {}m {}s", days, hours, minutes, seconds);
     let host_uptime = get_host_uptime().unwrap_or_else(|| "unknown".to_string());
     let container_info = if is_running_in_container() {
-        " (running inside container)"
+        // "\nRunning inside container."
+        ""
     } else {
         ""
     };
 
     format!(
-        "**Service uptime:** {}\n**Host uptime:** {}{}",
+        "**Bot uptime:** {}\n**Host uptime:** {}{}",
         service_uptime, host_uptime, container_info
     )
 }
